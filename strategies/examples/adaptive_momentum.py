@@ -420,3 +420,4 @@ class AdaptiveMomentumStrategy(BaseStrategy):
             'current_regime': self.current_regime.value if self.current_regime else None
         }
 
+

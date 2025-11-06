@@ -666,3 +666,4 @@ def _calculate_monthly_returns(equity_curve: pd.Series) -> pd.Series:
     monthly_returns = monthly.pct_change().dropna()
     return monthly_returns
 
+
