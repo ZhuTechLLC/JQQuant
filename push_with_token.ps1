@@ -11,6 +11,29 @@ Write-Host "JQQuant Git Push with Token" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
+# Refresh PATH environment variable to find Git
+Write-Host "Refreshing PATH environment variable..." -ForegroundColor Cyan
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+# Common Git installation paths
+$gitPaths = @(
+    "C:\Program Files\Git\cmd\git.exe",
+    "C:\Program Files (x86)\Git\cmd\git.exe",
+    "$env:LOCALAPPDATA\Programs\Git\cmd\git.exe",
+    "$env:ProgramFiles\Git\cmd\git.exe"
+)
+
+# Try to find Git and add to PATH if found
+$gitFound = $false
+foreach ($gitPath in $gitPaths) {
+    if (Test-Path $gitPath) {
+        $gitDir = Split-Path (Split-Path $gitPath) -Parent
+        $env:Path = "$gitDir\cmd;$env:Path"
+        $gitFound = $true
+        break
+    }
+}
+
 # Check if Git is installed
 $gitInstalled = $false
 try {
@@ -24,8 +47,12 @@ try {
 }
 
 if (-not $gitInstalled) {
-    Write-Host "ERROR: Git is not installed!" -ForegroundColor Red
-    Write-Host "Please install Git first from: https://git-scm.com/download/win" -ForegroundColor Yellow
+    Write-Host "ERROR: Git is not installed or not found in PATH!" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Please try one of the following:" -ForegroundColor Yellow
+    Write-Host "1. Install Git from: https://git-scm.com/download/win" -ForegroundColor Yellow
+    Write-Host "2. Restart your terminal/PowerShell window" -ForegroundColor Yellow
+    Write-Host "3. Or run: powershell -ExecutionPolicy Bypass -File refresh_and_push.ps1" -ForegroundColor Yellow
     exit 1
 }
 
