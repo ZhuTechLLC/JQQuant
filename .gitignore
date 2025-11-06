@@ -35,11 +35,13 @@ ENV/
 
 # 项目特定
 data/
-results/
 logs/
 *.log
-*.json
-!config/*.json
+# Results folder - exclude JSON data files (can be large)
+results/*.json
+# But allow HTML reports and documentation
+!results/*.html
+!results/*.md
 
 # 配置文件（包含敏感信息）
 config/jqdata_config.json

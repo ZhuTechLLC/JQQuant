@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查看回测报告</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+        .file-item {
+            padding: 20px;
+            margin: 15px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .file-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .file-item.no-history {
+            border-left-color: #ffa500;
+            opacity: 0.8;
+        }
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .file-item a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .file-item a:hover {
+            text-decoration: underline;
+        }
+        .file-info {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        .file-metrics {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .metric-badge {
+            background: #e8e8e8;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .metric-badge.positive {
+            background: #d4edda;
+            color: #155724;
+        }
+        .metric-badge.negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .warning-badge {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 回测报告列表</h1>
+        <p class="subtitle">自动扫描并列出所有可用的回测报告</p>
+        
+        <div class="section">
+            <h2 class="section-title">📄 JSON数据文件（可通过模板查看）</h2>
+            <ul class="file-list" id="jsonList">
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_v2_20251107_051109.json">backtest_adaptive_momentum_a_v2_20251107_051109.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a_v2</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 8.65%</span>
+                            <span class="metric-badge positive">年化收益: 42.52%</span>
+                            <span class="metric-badge">夏普比率: 2.09</span>
+                            <span class="metric-badge">交易次数: 88</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_v3_20251107_050624.json">backtest_adaptive_momentum_a_v3_20251107_050624.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a_v3</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 14.80%</span>
+                            <span class="metric-badge positive">年化收益: 80.28%</span>
+                            <span class="metric-badge">夏普比率: 2.90</span>
+                            <span class="metric-badge">交易次数: 80</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_v3_20251107_050350.json">backtest_adaptive_momentum_a_v3_20251107_050350.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a_v3</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge negative">总收益: -0.01%</span>
+                            <span class="metric-badge negative">年化收益: -1.16%</span>
+                            <span class="metric-badge">夏普比率: -11.22</span>
+                            <span class="metric-badge">交易次数: 1</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_v2_20251107_045517.json">backtest_adaptive_momentum_a_v2_20251107_045517.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a_v2</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 7.76%</span>
+                            <span class="metric-badge positive">年化收益: 37.62%</span>
+                            <span class="metric-badge">夏普比率: 1.75</span>
+                            <span class="metric-badge">交易次数: 82</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_v2_20251107_032954.json">backtest_adaptive_momentum_a_v2_20251107_032954.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a_v2</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 7.77%</span>
+                            <span class="metric-badge positive">年化收益: 37.64%</span>
+                            <span class="metric-badge">夏普比率: 1.90</span>
+                            <span class="metric-badge">交易次数: 88</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_v2_20251107_031943.json">backtest_adaptive_momentum_a_v2_20251107_031943.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a_v2</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 11.14%</span>
+                            <span class="metric-badge positive">年化收益: 57.03%</span>
+                            <span class="metric-badge">夏普比率: 2.49</span>
+                            <span class="metric-badge">交易次数: 88</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_v2_20251107_030012.json">backtest_adaptive_momentum_a_v2_20251107_030012.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a_v2</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 8.20%</span>
+                            <span class="metric-badge positive">年化收益: 40.01%</span>
+                            <span class="metric-badge">夏普比率: 2.00</span>
+                            <span class="metric-badge">交易次数: 85</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_20251107_024531.json">backtest_adaptive_momentum_a_20251107_024531.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 3.33%</span>
+                            <span class="metric-badge positive">年化收益: 15.02%</span>
+                            <span class="metric-badge">夏普比率: 0.65</span>
+                            <span class="metric-badge">交易次数: 107</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_20251107_024520.json">backtest_adaptive_momentum_a_20251107_024520.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 12.74%</span>
+                            <span class="metric-badge positive">年化收益: 66.90%</span>
+                            <span class="metric-badge">夏普比率: 1.79</span>
+                            <span class="metric-badge">交易次数: 101</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_20251107_024117.json">backtest_adaptive_momentum_a_20251107_024117.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 3.80%</span>
+                            <span class="metric-badge positive">年化收益: 17.26%</span>
+                            <span class="metric-badge">夏普比率: 0.73</span>
+                            <span class="metric-badge">交易次数: 110</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_20251107_023841.json">backtest_adaptive_momentum_a_20251107_023841.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge negative">总收益: -0.40%</span>
+                            <span class="metric-badge negative">年化收益: -1.71%</span>
+                            <span class="metric-badge">夏普比率: 0.05</span>
+                            <span class="metric-badge">交易次数: 106</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_a_20251107_022547.json">backtest_adaptive_momentum_a_20251107_022547.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>adaptive_momentum_a</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 12.66%</span>
+                            <span class="metric-badge positive">年化收益: 66.39%</span>
+                            <span class="metric-badge">夏普比率: 1.62</span>
+                            <span class="metric-badge">交易次数: 101</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_adaptive_momentum_20251107_015334.json">backtest_adaptive_momentum_20251107_015334.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 7.61%</span>
+                            <span class="metric-badge positive">年化收益: 36.81%</span>
+                            <span class="metric-badge">夏普比率: 1.79</span>
+                            <span class="metric-badge">交易次数: 10</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_ma_cross_20251107_014607.json">backtest_ma_cross_20251107_014607.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>均线交叉策略</strong> | 2024-08-01 至 2024-10-31
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 7.19%</span>
+                            <span class="metric-badge positive">年化收益: 34.54%</span>
+                            <span class="metric-badge">夏普比率: 1.21</span>
+                            <span class="metric-badge">交易次数: 4</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_ma_cross_20251107_014537.json">backtest_ma_cross_20251107_014537.json</a>
+                        
+                    </div>
+                    <div class="file-info">
+                        <strong>均线交叉策略</strong> | 2024-07-29 至 2024-08-05
+                        <div class="file-metrics">
+                            <span class="metric-badge positive">总收益: 0.00%</span>
+                            <span class="metric-badge positive">年化收益: 0.00%</span>
+                            <span class="metric-badge">夏普比率: 0.00</span>
+                            <span class="metric-badge">交易次数: 0</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="file-item no-history">
+                    <div class="file-header">
+                        <a href="report_template.html?file=backtest_ma_cross_20251106_235011.json">backtest_ma_cross_20251106_235011.json</a>
+                        <span class="warning-badge">⚠️ 缺少历史数据</span>
+                    </div>
+                    <div class="file-info">
+                        <strong>均线交叉策略</strong> | 2024-07-29 至 2025-08-05
+                        <div class="file-metrics">
+                            <span class="metric-badge negative">总收益: -0.02%</span>
+                            <span class="metric-badge negative">年化收益: -0.02%</span>
+                            <span class="metric-badge">夏普比率: -1.03</span>
+                            <span class="metric-badge">交易次数: 248</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">📊 HTML完整报告（可直接打开）</h2>
+            <ul class="file-list" id="htmlList">
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v2_v1.0_report_20251107_051109.html" target="_blank">adaptive_momentum_a_v2_v1.0_report_20251107_051109.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v3_v1.0_report_20251107_050624.html" target="_blank">adaptive_momentum_a_v3_v1.0_report_20251107_050624.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v3_v1.0_report_20251107_050350.html" target="_blank">adaptive_momentum_a_v3_v1.0_report_20251107_050350.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v2_v1.0_report_20251107_032954.html" target="_blank">adaptive_momentum_a_v2_v1.0_report_20251107_032954.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v2_v1.0_report_20251107_031943.html" target="_blank">adaptive_momentum_a_v2_v1.0_report_20251107_031943.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v2_v1.0_report_20251107_030012.html" target="_blank">adaptive_momentum_a_v2_v1.0_report_20251107_030012.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v1.0_report_20251107_024531.html" target="_blank">adaptive_momentum_a_v1.0_report_20251107_024531.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v1.0_report_20251107_024117.html" target="_blank">adaptive_momentum_a_v1.0_report_20251107_024117.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_a_v1.0_report_20251107_022547.html" target="_blank">adaptive_momentum_a_v1.0_report_20251107_022547.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_v1.0_report_20251107_015334.html" target="_blank">adaptive_momentum_v1.0_report_20251107_015334.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="ma_cross_v1.0_report_20251107_014607.html" target="_blank">ma_cross_v1.0_report_20251107_014607.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>均线交叉策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="ma_cross_v1.0_report_20251107_014546.html" target="_blank">ma_cross_v1.0_report_20251107_014546.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>均线交叉策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+                <li class="file-item">
+                    <div class="file-header">
+                        <a href="adaptive_momentum_v1.0_report.html" target="_blank">adaptive_momentum_v1.0_report.html</a>
+                    </div>
+                    <div class="file-info">
+                        <strong>自适应动量策略</strong> | 完整HTML报告
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div style="margin-top: 40px; padding: 20px; background: #e8f4f8; border-radius: 8px; color: #666;">
+            <strong>💡 使用提示：</strong>
+            <ul style="margin-top: 10px; padding-left: 20px;">
+                <li><strong>JSON文件：</strong>点击后会在模板页面中加载数据，需要完整的portfolio_history数据才能显示图表</li>
+                <li><strong>HTML报告：</strong>可直接在浏览器中打开，包含完整的图表和分析</li>
+                <li><strong>缺少历史数据：</strong>如果JSON文件缺少portfolio_history，请运行新的回测以获取完整数据</li>
+            </ul>
+        </div>
+        
+        <p style="margin-top: 30px; text-align: center; color: #999; font-size: 0.85em;">
+            最后更新: 2025-11-07 05:11:09
+        </p>
+    </div>
+</body>
+</html>

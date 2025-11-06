@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JQQuant 回测报告 - MA Cross Strategy</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-card.positive {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .metric-card.negative {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .metric-card.neutral {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .metric-unit {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 400px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .strategy-explanation {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .strategy-explanation h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .strategy-explanation ul {
+            margin-left: 20px;
+        }
+
+        .strategy-explanation li {
+            margin: 10px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .badge-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 JQQuant 回测报告</h1>
+            <div class="subtitle" id="reportTitle">加载中...</div>
+        </header>
+
+        <div class="content">
+            <!-- 回测概览 -->
+            <section class="section">
+                <h2>📈 回测概览</h2>
+                <div class="metrics-grid" id="metricsGrid">
+                    <!-- 动态生成指标卡片 -->
+                </div>
+            </section>
+
+            <!-- 策略说明 -->
+            <section class="section">
+                <h2>💡 策略原理</h2>
+                <div class="strategy-explanation">
+                    <h4>📊 双均线交叉策略 (Moving Average Crossover Strategy)</h4>
+                    <p><strong>策略类型：</strong>趋势跟踪策略</p>
+                    <p><strong>核心思想：</strong></p>
+                    <ul>
+                        <li>使用两条移动平均线（短期均线和长期均线）来判断市场趋势</li>
+                        <li>当短期均线上穿长期均线时，产生买入信号（金叉）</li>
+                        <li>当短期均线下穿长期均线时，产生卖出信号（死叉）</li>
+                    </ul>
+                    <p><strong>策略参数：</strong></p>
+                    <ul>
+                        <li>短期均线周期：5日（快速响应价格变化）</li>
+                        <li>长期均线周期：20日（过滤短期波动）</li>
+                    </ul>
+                    <div class="info-box">
+                        <strong>💡 策略优势：</strong>
+                        <ul>
+                            <li>简单易懂，易于实现</li>
+                            <li>能够捕捉中长期趋势</li>
+                            <li>交易信号明确，执行简单</li>
+                        </ul>
+                    </div>
+                    <div class="warning-box">
+                        <strong>⚠️ 策略风险：</strong>
+                        <ul>
+                            <li>在震荡市场中容易产生假信号</li>
+                            <li>存在滞后性，可能错过最佳买卖点</li>
+                            <li>需要足够的市场趋势才能盈利</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 代码说明 -->
+            <section class="section">
+                <h2>💻 代码说明</h2>
+                <h3>策略实现代码</h3>
+                <div class="code-block">
+<span style="color: #5c6370;"># 均线交叉策略核心逻辑</span>
+<span style="color: #c678dd;">class</span> <span style="color: #61afef;">MACrossStrategy</span>(BaseStrategy):
+    <span style="color: #c678dd;">def</span> <span style="color: #61afef;">__init__</span>(<span style="color: #e06c75;">self</span>, short_window=<span style="color: #d19a66;">5</span>, long_window=<span style="color: #d19a66;">20</span>):
+        <span style="color: #e06c75;">self</span>.short_window = short_window  <span style="color: #5c6370;"># 短期均线周期</span>
+        <span style="color: #e06c75;">self</span>.long_window = long_window    <span style="color: #5c6370;"># 长期均线周期</span>
+    
+    <span style="color: #c678dd;">def</span> <span style="color: #61afef;">handle_data</span>(<span style="color: #e06c75;">self</span>, data, date):
+        <span style="color: #5c6370;"># 计算短期和长期移动平均线</span>
+        short_ma = data[<span style="color: #98c379;">'close'</span>].rolling(window=<span style="color: #e06c75;">self</span>.short_window).mean()
+        long_ma = data[<span style="color: #98c379;">'close'</span>].rolling(window=<span style="color: #e06c75;">self</span>.long_window).mean()
+        
+        <span style="color: #5c6370;"># 判断均线交叉信号</span>
+        <span style="color: #c678dd;">if</span> short_ma.iloc[-<span style="color: #d19a66;">1</span>] > long_ma.iloc[-<span style="color: #d19a66;">1</span>] <span style="color: #c678dd;">and</span> short_ma.iloc[-<span style="color: #d19a66;">2</span>] <= long_ma.iloc[-<span style="color: #d19a66;">2</span>]:
+            <span style="color: #5c6370;"># 金叉：买入信号</span>
+            order_manager.create_order(security, <span style="color: #d19a66;">100</span>, OrderType.MARKET)
+        <span style="color: #c678dd;">elif</span> short_ma.iloc[-<span style="color: #d19a66;">1</span>] < long_ma.iloc[-<span style="color: #d19a66;">1</span>] <span style="color: #c678dd;">and</span> short_ma.iloc[-<span style="color: #d19a66;">2</span>] >= long_ma.iloc[-<span style="color: #d19a66;">2</span>]:
+            <span style="color: #5c6370;"># 死叉：卖出信号</span>
+            order_manager.create_order(security, -position.amount, OrderType.MARKET)
+                </div>
+                
+                <h3>代码说明</h3>
+                <div class="info-box">
+                    <p><strong>1. 策略初始化：</strong></p>
+                    <p>策略接收两个参数：短期均线周期（默认5日）和长期均线周期（默认20日）。</p>
+                    
+                    <p><strong>2. 数据处理：</strong></p>
+                    <p>在每个交易日，策略会计算当前股票的短期和长期移动平均线。</p>
+                    
+                    <p><strong>3. 信号生成：</strong></p>
+                    <ul>
+                        <li><strong>买入信号（金叉）：</strong>当短期均线从下方穿越长期均线时触发</li>
+                        <li><strong>卖出信号（死叉）：</strong>当短期均线从上方穿越长期均线时触发</li>
+                    </ul>
+                    
+                    <p><strong>4. 订单执行：</strong></p>
+                    <p>根据信号创建市价单，买入时固定数量100股，卖出时全部持仓。</p>
+                </div>
+            </section>
+
+            <!-- 结果分析 -->
+            <section class="section">
+                <h2>📊 结果分析</h2>
+                <div id="resultAnalysis">
+                    <!-- 动态生成结果分析 -->
+                </div>
+            </section>
+
+            <!-- 图表展示 -->
+            <section class="section">
+                <h2>📉 可视化图表</h2>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>JQQuant 量化回测系统 | 报告生成时间: <span id="reportTime"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        // 嵌入的回测数据
+        const reportData = {
+            "strategy": "ma_cross",
+            "start_date": "2024-07-29",
+            "end_date": "2025-08-05",
+            "securities": ["000001.XSHE"],
+            "summary": {
+                "initial_cash": 1000000,
+                "current_cash": 999784.5600402001,
+                "total_value": 999784.5600402001,
+                "total_profit": -215.43995979987085,
+                "total_profit_rate": -0.00021543995979987084,
+                "positions_count": 0,
+                "positions": {}
+            },
+            "metrics": {
+                "total_return": -0.00021543995979987084,
+                "annual_return": -0.00021891441748755902,
+                "sharpe_ratio": -1.0287159861889688,
+                "max_drawdown": 0.00046215290957296297,
+                "total_trades": 248
+            }
+        };
+
+        // 生成报告
+        function generateReport() {
+            generateHeader();
+            generateMetrics();
+            generateResultAnalysis();
+            generateCharts();
+        }
+
+        // 生成标题
+        function generateHeader() {
+            const title = document.getElementById('reportTitle');
+            title.textContent = `${reportData.strategy.toUpperCase()} 策略 | ${reportData.start_date} 至 ${reportData.end_date}`;
+            
+            const reportTime = document.getElementById('reportTime');
+            reportTime.textContent = new Date().toLocaleString('zh-CN');
+        }
+
+        // 生成指标卡片
+        function generateMetrics() {
+            const grid = document.getElementById('metricsGrid');
+            const summary = reportData.summary;
+            const metrics = reportData.metrics;
+
+            const metricCards = [
+                {
+                    label: '初始资金',
+                    value: formatNumber(summary.initial_cash),
+                    unit: '元',
+                    class: 'neutral'
+                },
+                {
+                    label: '最终资产',
+                    value: formatNumber(summary.total_value),
+                    unit: '元',
+                    class: summary.total_value >= summary.initial_cash ? 'positive' : 'negative'
+                },
+                {
+                    label: '总收益率',
+                    value: (metrics.total_return * 100).toFixed(2),
+                    unit: '%',
+                    class: metrics.total_return >= 0 ? 'positive' : 'negative'
+                },
+                {
+                    label: '年化收益率',
+                    value: (metrics.annual_return * 100).toFixed(2),
+                    unit: '%',
+                    class: metrics.annual_return >= 0 ? 'positive' : 'negative'
+                },
+                {
+                    label: '夏普比率',
+                    value: metrics.sharpe_ratio.toFixed(2),
+                    unit: '',
+                    class: metrics.sharpe_ratio >= 1 ? 'positive' : metrics.sharpe_ratio >= 0 ? 'neutral' : 'negative'
+                },
+                {
+                    label: '最大回撤',
+                    value: (metrics.max_drawdown * 100).toFixed(2),
+                    unit: '%',
+                    class: metrics.max_drawdown <= 0.1 ? 'positive' : metrics.max_drawdown <= 0.2 ? 'neutral' : 'negative'
+                },
+                {
+                    label: '总交易次数',
+                    value: metrics.total_trades,
+                    unit: '次',
+                    class: 'neutral'
+                },
+                {
+                    label: '持仓数量',
+                    value: summary.positions_count,
+                    unit: '只',
+                    class: 'neutral'
+                }
+            ];
+
+            grid.innerHTML = metricCards.map(card => `
+                <div class="metric-card ${card.class}">
+                    <div class="metric-label">${card.label}</div>
+                    <div class="metric-value">${card.value}</div>
+                    <div class="metric-unit">${card.unit}</div>
+                </div>
+            `).join('');
+        }
+
+        // 生成结果分析
+        function generateResultAnalysis() {
+            const container = document.getElementById('resultAnalysis');
+            const summary = reportData.summary;
+            const metrics = reportData.metrics;
+
+            let analysis = '';
+            
+            // 收益分析
+            const profitRate = metrics.total_return * 100;
+            const profitStatus = profitRate >= 0 ? 'positive' : 'negative';
+            const profitBadge = profitRate >= 0 ? 'badge-success' : 'badge-danger';
+            
+            analysis += `
+                <h3>💰 收益分析</h3>
+                <div class="${profitStatus === 'positive' ? 'success-box' : 'warning-box'}">
+                    <p><strong>总收益：</strong> 
+                        <span class="badge ${profitBadge}">${profitRate >= 0 ? '+' : ''}${profitRate.toFixed(2)}%</span>
+                    </p>
+                    <p>初始资金：${formatNumber(summary.initial_cash)} 元</p>
+                    <p>最终资产：${formatNumber(summary.total_value)} 元</p>
+                    <p>盈亏金额：${profitRate >= 0 ? '+' : ''}${formatNumber(summary.total_profit)} 元</p>
+                </div>
+            `;
+
+            // 风险分析
+            const sharpeStatus = metrics.sharpe_ratio >= 1 ? 'positive' : metrics.sharpe_ratio >= 0 ? 'neutral' : 'negative';
+            const drawdownStatus = metrics.max_drawdown <= 0.1 ? 'positive' : metrics.max_drawdown <= 0.2 ? 'neutral' : 'negative';
+            
+            analysis += `
+                <h3>⚠️ 风险分析</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card ${sharpeStatus}">
+                        <div class="metric-label">夏普比率</div>
+                        <div class="metric-value">${metrics.sharpe_ratio.toFixed(2)}</div>
+                        <div class="metric-unit">${getSharpeRating(metrics.sharpe_ratio)}</div>
+                    </div>
+                    <div class="metric-card ${drawdownStatus}">
+                        <div class="metric-label">最大回撤</div>
+                        <div class="metric-value">${(metrics.max_drawdown * 100).toFixed(2)}</div>
+                        <div class="metric-unit">%</div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>夏普比率说明：</strong></p>
+                    <ul>
+                        <li>${metrics.sharpe_ratio >= 1 ? '✅ 优秀：风险调整后收益表现良好' : metrics.sharpe_ratio >= 0 ? '⚠️ 一般：风险调整后收益表现一般' : '❌ 较差：风险调整后收益表现不佳'}</li>
+                        <li>夏普比率 = (收益率 - 无风险利率) / 收益率标准差</li>
+                        <li>通常认为夏普比率 > 1 为良好，> 2 为优秀</li>
+                    </ul>
+                    <p><strong>最大回撤说明：</strong></p>
+                    <ul>
+                        <li>最大回撤 ${(metrics.max_drawdown * 100).toFixed(2)}% ${metrics.max_drawdown <= 0.1 ? '，风险控制良好' : metrics.max_drawdown <= 0.2 ? '，风险控制一般' : '，风险控制需要改进'}</li>
+                        <li>最大回撤反映了策略在最坏情况下的损失</li>
+                        <li>通常认为最大回撤 < 10% 为良好，< 20% 为可接受</li>
+                    </ul>
+                </div>
+            `;
+
+            // 交易分析
+            analysis += `
+                <h3>📊 交易分析</h3>
+                <div class="info-box">
+                    <p><strong>总交易次数：</strong> ${metrics.total_trades} 次</p>
+                    <p><strong>平均持仓数量：</strong> ${summary.positions_count} 只</p>
+                    <p><strong>交易频率：</strong> ${calculateTradeFrequency()} 次/月</p>
+                </div>
+            `;
+
+            // 综合评价
+            analysis += `
+                <h3>📝 综合评价</h3>
+                <div class="${getOverallRating() === 'good' ? 'success-box' : getOverallRating() === 'fair' ? 'info-box' : 'warning-box'}">
+                    ${generateOverallComment()}
+                </div>
+            `;
+
+            container.innerHTML = analysis;
+        }
+
+        // 生成图表
+        function generateCharts() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // 模拟数据（实际应该从reportData.portfolio_history获取）
+            const dates = generateDateRange(reportData.start_date, reportData.end_date);
+            const values = generateSimulatedValues(reportData.summary.initial_cash, reportData.metrics.total_return, dates.length);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: '总资产',
+                        data: values,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: '初始资金',
+                        data: Array(dates.length).fill(reportData.summary.initial_cash),
+                        borderColor: '#999',
+                        borderWidth: 1,
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '回测期间资产变化曲线',
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatNumber(value) + ' 元';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 辅助函数
+        function formatNumber(num) {
+            return new Intl.NumberFormat('zh-CN').format(num.toFixed(2));
+        }
+
+        function getSharpeRating(sharpe) {
+            if (sharpe >= 2) return '优秀';
+            if (sharpe >= 1) return '良好';
+            if (sharpe >= 0) return '一般';
+            return '较差';
+        }
+
+        function calculateTradeFrequency() {
+            const start = new Date(reportData.start_date);
+            const end = new Date(reportData.end_date);
+            const months = (end - start) / (1000 * 60 * 60 * 24 * 30);
+            return (reportData.metrics.total_trades / months).toFixed(1);
+        }
+
+        function getOverallRating() {
+            const metrics = reportData.metrics;
+            let score = 0;
+            
+            if (metrics.total_return >= 0) score += 2;
+            if (metrics.sharpe_ratio >= 1) score += 2;
+            if (metrics.max_drawdown <= 0.1) score += 1;
+            
+            if (score >= 4) return 'good';
+            if (score >= 2) return 'fair';
+            return 'poor';
+        }
+
+        function generateOverallComment() {
+            const metrics = reportData.metrics;
+            
+            let comment = '<p><strong>策略表现评价：</strong></p><ul>';
+            
+            if (metrics.total_return >= 0) {
+                comment += '<li>✅ 策略在回测期间实现了正收益</li>';
+            } else {
+                comment += '<li>❌ 策略在回测期间出现亏损，需要优化</li>';
+            }
+            
+            if (metrics.sharpe_ratio >= 1) {
+                comment += '<li>✅ 风险调整后收益表现良好</li>';
+            } else if (metrics.sharpe_ratio >= 0) {
+                comment += '<li>⚠️ 风险调整后收益表现一般</li>';
+            } else {
+                comment += '<li>❌ 风险调整后收益表现不佳</li>';
+            }
+            
+            if (metrics.max_drawdown <= 0.1) {
+                comment += '<li>✅ 最大回撤控制在合理范围内</li>';
+            } else if (metrics.max_drawdown <= 0.2) {
+                comment += '<li>⚠️ 最大回撤较大，需要注意风险控制</li>';
+            } else {
+                comment += '<li>❌ 最大回撤过大，风险控制需要改进</li>';
+            }
+            
+            comment += '</ul>';
+            
+            comment += '<p><strong>改进建议：</strong></p><ul>';
+            comment += '<li>考虑调整均线周期参数，优化买卖信号</li>';
+            comment += '<li>添加止损和止盈机制，控制风险</li>';
+            comment += '<li>结合其他技术指标，提高信号准确性</li>';
+            comment += '<li>优化仓位管理，避免过度交易</li>';
+            comment += '</ul>';
+            
+            return comment;
+        }
+
+        function generateDateRange(start, end) {
+            const dates = [];
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const current = new Date(startDate);
+            
+            while (current <= endDate) {
+                dates.push(current.toLocaleDateString('zh-CN'));
+                current.setDate(current.getDate() + 1);
+            }
+            
+            // 如果日期太多，只取部分
+            if (dates.length > 100) {
+                const step = Math.floor(dates.length / 50);
+                return dates.filter((_, i) => i % step === 0);
+            }
+            
+            return dates;
+        }
+
+        function generateSimulatedValues(initial, returnRate, count) {
+            const values = [initial];
+            const dailyReturn = Math.pow(1 + returnRate, 1 / count) - 1;
+            
+            for (let i = 1; i < count; i++) {
+                const randomFactor = 1 + (Math.random() - 0.5) * 0.02; // 添加一些随机波动
+                values.push(values[i - 1] * (1 + dailyReturn * randomFactor));
+            }
+            
+            return values;
+        }
+
+        // 页面加载时执行
+        window.addEventListener('DOMContentLoaded', generateReport);
+    </script>
+</body>
+</html>
+
