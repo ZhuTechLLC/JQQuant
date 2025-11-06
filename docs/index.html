@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JQQuant 完整使用教程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .nav a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .section h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            color: #abb2bf;
+        }
+
+        .code-block .keyword { color: #c678dd; }
+        .code-block .string { color: #98c379; }
+        .code-block .comment { color: #5c6370; }
+        .code-block .function { color: #61afef; }
+        .code-block .number { color: #d19a66; }
+
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            margin-top: 50px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .command {
+            background: #282c34;
+            color: #98c379;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .nav ul {
+                flex-direction: column;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 JQQuant 完整使用教程</h1>
+            <p>基于聚宽API的量化交易回测与策略开发平台</p>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="#overview">项目概述</a></li>
+                <li><a href="#setup">环境准备</a></li>
+                <li><a href="#quickstart">快速开始</a></li>
+                <li><a href="#usage">详细使用</a></li>
+                <li><a href="#strategy">策略开发</a></li>
+                <li><a href="#visualization">可视化</a></li>
+                <li><a href="#troubleshooting">问题排查</a></li>
+                <li><a href="#astro">Astro集成</a></li>
+            </ul>
+        </nav>
+
+        <section id="overview" class="section">
+            <h2>📋 项目概述</h2>
+            <p>JQQuant 是一个类似 QuantConnect 的本地化量化交易平台，可以在 Cursor IDE 中直接进行策略开发、回测和交易。</p>
+            
+            <h3>核心特性</h3>
+            <ul>
+                <li>✅ 聚宽数据API集成</li>
+                <li>✅ 事件驱动回测引擎</li>
+                <li>✅ 策略开发框架</li>
+                <li>✅ 实时回测结果可视化</li>
+                <li>✅ 性能指标分析</li>
+                <li>✅ Cursor IDE集成</li>
+            </ul>
+
+            <h3>项目结构</h3>
+            <div class="code-block">
+<code>JQQuant/
+├── core/              # 核心引擎
+├── jqdata/           # 聚宽API集成
+├── strategies/       # 策略目录
+├── utils/            # 工具函数
+├── config/           # 配置文件
+├── main.py           # 主入口
+└── docs/             # 文档（本教程）</code>
+            </div>
+        </section>
+
+        <section id="setup" class="section">
+            <h2>⚙️ 环境准备</h2>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>安装Python依赖</strong>
+                <div class="code-block">
+<code><span class="comment"># 确保已加载PowerShell配置（禁用代理）</span>
+<span class="command">. $PROFILE</span>
+
+<span class="comment"># 安装依赖</span>
+<span class="command">pip install -r requirements.txt</span></code>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>配置聚宽账号</strong>
+                <p>配置文件位置：<span class="highlight">config/jqdata_config.json</span></p>
+                <div class="code-block">
+<code>{
+  <span class="string">"username"</span>: <span class="string">"18072069583"</span>,
+  <span class="string">"password"</span>: <span class="string">"%5Diamond"</span>,
+  <span class="string">"api_endpoint"</span>: <span class="string">"https://dataapi.joinquant.com"</span>,
+  <span class="string">"timeout"</span>: <span class="number">30</span>,
+  <span class="string">"retry_times"</span>: <span class="number">3</span>
+}</code>
+                </div>
+                <div class="info">
+                    <strong>提示：</strong> 配置文件已配置好，无需修改（除非更换账号）。
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>验证安装</strong>
+                <div class="code-block">
+<code><span class="command">python test_imports.py</span></code>
+                </div>
+                <p>应该看到所有模块导入成功。</p>
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ TA-Lib Windows安装：</strong>
+                <ol>
+                    <li>下载预编译wheel：<a href="https://www.lfd.uci.edu/~gohlke/pythonlibs/#ta-lib" target="_blank">https://www.lfd.uci.edu/~gohlke/pythonlibs/#ta-lib</a></li>
+                    <li>选择对应Python版本的whl文件</li>
+                    <li>安装：<span class="command">pip install TA_Lib‑0.4.xx‑cp38‑cp38‑win_amd64.whl</span></li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="quickstart" class="section">
+            <h2>🚀 快速开始</h2>
+
+            <h3>方式1：命令行运行（推荐）</h3>
+            <div class="code-block">
+<code><span class="command">python main.py --strategy ma_cross --start 2020-01-01 --end 2023-12-31 --securities 000001.XSHE 000002.XSHE</span></code>
+            </div>
+
+            <h4>参数说明</h4>
+            <table>
+                <tr>
+                    <th>参数</th>
+                    <th>说明</th>
+                    <th>默认值</th>
+                </tr>
+                <tr>
+                    <td><code>--strategy</code></td>
+                    <td>策略名称（当前支持 ma_cross）</td>
+                    <td>必需</td>
+                </tr>
+                <tr>
+                    <td><code>--start</code></td>
+                    <td>回测开始日期 (YYYY-MM-DD)</td>
+                    <td>必需</td>
+                </tr>
+                <tr>
+                    <td><code>--end</code></td>
+                    <td>回测结束日期 (YYYY-MM-DD)</td>
+                    <td>必需</td>
+                </tr>
+                <tr>
+                    <td><code>--securities</code></td>
+                    <td>股票代码列表（聚宽格式）</td>
+                    <td>必需</td>
+                </tr>
+                <tr>
+                    <td><code>--cash</code></td>
+                    <td>初始资金</td>
+                    <td>1000000</td>
+                </tr>
+                <tr>
+                    <td><code>--commission</code></td>
+                    <td>手续费率</td>
+                    <td>0.0003</td>
+                </tr>
+                <tr>
+                    <td><code>--slippage</code></td>
+                    <td>滑点</td>
+                    <td>0.001</td>
+                </tr>
+                <tr>
+                    <td><code>--short-window</code></td>
+                    <td>短期均线周期（MA策略）</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td><code>--long-window</code></td>
+                    <td>长期均线周期（MA策略）</td>
+                    <td>20</td>
+                </tr>
+            </table>
+
+            <h3>方式2：使用Cursor任务</h3>
+            <div class="step">
+                <span class="step-number">1</span>
+                按 <span class="highlight">Ctrl+Shift+P</span> 打开命令面板
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                输入 <span class="highlight">"Tasks: Run Task"</span>
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                选择 <span class="highlight">"JQQuant: 运行回测"</span>
+            </div>
+
+            <h3>方式3：Python脚本</h3>
+            <div class="code-block">
+<code><span class="keyword">import</span> sys
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+sys.path.insert(<span class="number">0</span>, <span class="function">str</span>(Path(<span class="string">__file__</span>).parent))
+
+<span class="keyword">from</span> main <span class="keyword">import</span> run_backtest
+
+<span class="comment"># 运行回测</span>
+results = <span class="function">run_backtest</span>(
+    strategy_name=<span class="string">'ma_cross'</span>,
+    start_date=<span class="string">'2020-01-01'</span>,
+    end_date=<span class="string">'2023-12-31'</span>,
+    securities=[<span class="string">'000001.XSHE'</span>, <span class="string">'000002.XSHE'</span>],
+    initial_cash=<span class="number">1000000</span>,
+    commission_rate=<span class="number">0.0003</span>,
+    slippage=<span class="number">0.001</span>,
+    strategy_params={<span class="string">'short_window'</span>: <span class="number">5</span>, <span class="string">'long_window'</span>: <span class="number">20</span>}
+)
+
+<span class="keyword">if</span> results:
+    <span class="function">print</span>(<span class="string">"回测完成！"</span>)
+    <span class="function">print</span>(<span class="function">f</span><span class="string">"总收益: {results['summary']['total_profit_rate']*100:.2f}%"</span>)</code>
+            </div>
+        </section>
+
+        <section id="usage" class="section">
+            <h2>📖 详细使用指南</h2>
+
+            <h3>1. 股票代码格式</h3>
+            <p>聚宽使用特定的股票代码格式：</p>
+            <ul>
+                <li><strong>深圳股票</strong>: <code>000001.XSHE</code> (平安银行)</li>
+                <li><strong>上海股票</strong>: <code>600000.XSHG</code> (浦发银行)</li>
+                <li><strong>指数</strong>: <code>000300.XSHG</code> (沪深300)</li>
+            </ul>
+
+            <h3>2. 获取股票代码</h3>
+            <div class="code-block">
+<code><span class="keyword">from</span> jqdata.client <span class="keyword">import</span> JQDataClient
+<span class="keyword">from</span> config.config_manager <span class="keyword">import</span> get_config_manager
+
+<span class="comment"># 初始化客户端</span>
+config_manager = <span class="function">get_config_manager</span>()
+config = config_manager.<span class="function">get_jqdata_config</span>()
+jq_client = <span class="function">JQDataClient</span>()
+jq_client.<span class="function">authenticate</span>(config[<span class="string">'username'</span>], config[<span class="string">'password'</span>])
+
+<span class="comment"># 获取所有股票</span>
+all_stocks = jq_client.<span class="function">get_all_securities</span>(types=[<span class="string">'stock'</span>], date=<span class="string">'2023-12-31'</span>)
+<span class="function">print</span>(all_stocks.<span class="function">head</span>())
+
+<span class="comment"># 获取指数成分股</span>
+hs300_stocks = jq_client.<span class="function">get_index_stocks</span>(<span class="string">'000300.XSHG'</span>, date=<span class="string">'2023-12-31'</span>)
+<span class="function">print</span>(<span class="function">f</span><span class="string">"沪深300成分股数量: {len(hs300_stocks)}"</span>)</code>
+            </div>
+
+            <h3>3. 查看回测结果</h3>
+            <p>回测完成后，结果会：</p>
+            <ol>
+                <li><strong>控制台输出</strong> - 显示关键指标</li>
+                <li><strong>JSON文件</strong> - 保存到 <code>results/</code> 目录</li>
+                <li><strong>日志文件</strong> - 保存到 <code>logs/jqquant.log</code></li>
+            </ol>
+
+            <h4>结果文件格式</h4>
+            <div class="code-block">
+<code>{
+  <span class="string">"strategy"</span>: <span class="string">"ma_cross"</span>,
+  <span class="string">"start_date"</span>: <span class="string">"2020-01-01"</span>,
+  <span class="string">"end_date"</span>: <span class="string">"2023-12-31"</span>,
+  <span class="string">"securities"</span>: [<span class="string">"000001.XSHE"</span>],
+  <span class="string">"summary"</span>: {
+    <span class="string">"initial_cash"</span>: <span class="number">1000000</span>,
+    <span class="string">"total_value"</span>: <span class="number">1200000</span>,
+    <span class="string">"total_profit_rate"</span>: <span class="number">0.2</span>
+  },
+  <span class="string">"metrics"</span>: {
+    <span class="string">"total_return"</span>: <span class="number">0.2</span>,
+    <span class="string">"annual_return"</span>: <span class="number">0.05</span>,
+    <span class="string">"sharpe_ratio"</span>: <span class="number">1.2</span>,
+    <span class="string">"max_drawdown"</span>: <span class="number">0.15</span>
+  }
+}</code>
+            </div>
+        </section>
+
+        <section id="strategy" class="section">
+            <h2>💡 策略开发</h2>
+
+            <h3>创建自定义策略</h3>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>创建策略文件</strong>
+                <p>在 <code>strategies/</code> 目录下创建新文件，例如 <code>my_strategy.py</code>：</p>
+                <div class="code-block">
+<code><span class="keyword">from</span> strategies.base_strategy <span class="keyword">import</span> BaseStrategy
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+<span class="keyword">from</span> core.order_manager <span class="keyword">import</span> OrderType
+
+<span class="keyword">class</span> MyStrategy(<span class="function">BaseStrategy</span>):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>):
+        <span class="function">super</span>().<span class="function">__init__</span>(name=<span class="string">"My Strategy"</span>)
+    
+    <span class="keyword">def</span> <span class="function">initialize</span>(<span class="keyword">self</span>, context):
+        <span class="function">super</span>().<span class="function">initialize</span>(context)
+        <span class="function">print</span>(<span class="function">f</span><span class="string">"策略 {self.name} 初始化完成"</span>)
+    
+    <span class="keyword">def</span> <span class="function">handle_data</span>(<span class="keyword">self</span>, data: pd.DataFrame, date: datetime):
+        portfolio = <span class="keyword">self</span>.context[<span class="string">'portfolio'</span>]
+        order_manager = <span class="keyword">self</span>.context[<span class="string">'order_manager'</span>]
+        securities = <span class="keyword">self</span>.context[<span class="string">'securities'</span>]
+        
+        <span class="comment"># 您的策略逻辑</span>
+        <span class="keyword">for</span> security <span class="keyword">in</span> securities:
+            position = portfolio.<span class="function">get_position</span>(security)
+            has_position = position <span class="keyword">is not None</span> <span class="keyword">and</span> position.amount > <span class="number">0</span>
+            
+            <span class="keyword">if not</span> has_position:
+                <span class="comment"># 买入条件</span>
+                order_manager.<span class="function">create_order</span>(security, <span class="number">100</span>, order_type=OrderType.MARKET)
+            <span class="keyword">else</span>:
+                <span class="comment"># 卖出条件</span>
+                order_manager.<span class="function">create_order</span>(security, -position.amount, order_type=OrderType.MARKET)</code>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>注册策略</strong>
+                <p>在 <code>main.py</code> 的 <code>load_strategy</code> 函数中添加：</p>
+                <div class="code-block">
+<code><span class="keyword">elif</span> strategy_name == <span class="string">'my_strategy'</span>:
+    <span class="keyword">from</span> strategies.my_strategy <span class="keyword">import</span> MyStrategy
+    <span class="keyword">return</span> <span class="function">MyStrategy</span>()</code>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>运行策略</strong>
+                <div class="code-block">
+<code><span class="command">python main.py --strategy my_strategy --start 2020-01-01 --end 2023-12-31 --securities 000001.XSHE</span></code>
+                </div>
+            </div>
+        </section>
+
+        <section id="visualization" class="section">
+            <h2>📊 可视化</h2>
+
+            <h3>使用matplotlib可视化</h3>
+            <div class="code-block">
+<code><span class="keyword">from</span> utils.visualization <span class="keyword">import</span> plot_backtest_results
+<span class="keyword">import</span> json
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="comment"># 加载结果</span>
+results_file = Path(<span class="string">"results/backtest_ma_cross_20231231_120000.json"</span>)
+<span class="keyword">with</span> <span class="function">open</span>(results_file, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    results = json.<span class="function">load</span>(f)
+
+<span class="comment"># 绘制图表</span>
+<span class="function">plot_backtest_results</span>(results, save_path=Path(<span class="string">"results/chart.png"</span>))</code>
+            </div>
+
+            <h3>Astro集成方案（见下方）</h3>
+        </section>
+
+        <section id="troubleshooting" class="section">
+            <h2>🔧 问题排查</h2>
+
+            <h3>常见问题</h3>
+
+            <div class="error">
+                <strong>Q1: 聚宽认证失败</strong>
+                <p><strong>解决方案：</strong></p>
+                <ol>
+                    <li>检查 <code>config/jqdata_config.json</code> 中的账号密码</li>
+                    <li>确认网络连接正常</li>
+                    <li>查看日志文件 <code>logs/jqquant.log</code></li>
+                </ol>
+            </div>
+
+            <div class="error">
+                <strong>Q2: 数据获取失败</strong>
+                <p><strong>解决方案：</strong></p>
+                <ol>
+                    <li>检查股票代码格式（如 <code>000001.XSHE</code>）</li>
+                    <li>确认日期范围有效</li>
+                    <li>检查聚宽账号权限</li>
+                </ol>
+            </div>
+
+            <div class="error">
+                <strong>Q3: 模块导入失败</strong>
+                <p><strong>解决方案：</strong></p>
+                <ol>
+                    <li>确保已安装依赖：<code>pip install -r requirements.txt</code></li>
+                    <li>检查Python版本（需要3.8+）</li>
+                    <li>确认在项目根目录运行</li>
+                </ol>
+            </div>
+
+            <h3>调试方法</h3>
+            <div class="code-block">
+<code><span class="comment"># 1. 检查配置</span>
+<span class="keyword">from</span> config.config_manager <span class="keyword">import</span> get_config_manager
+config_manager = <span class="function">get_config_manager</span>()
+jq_config = config_manager.<span class="function">get_jqdata_config</span>()
+<span class="function">print</span>(<span class="function">f</span><span class="string">"用户名: {jq_config.get('username')}"</span>)
+
+<span class="comment"># 2. 测试聚宽连接</span>
+<span class="keyword">from</span> jqdata.client <span class="keyword">import</span> JQDataClient
+jq_client = <span class="function">JQDataClient</span>()
+<span class="keyword">if</span> jq_client.<span class="function">authenticate</span>(config[<span class="string">'username'</span>], config[<span class="string">'password'</span>]):
+    <span class="function">print</span>(<span class="string">"认证成功！"</span>)
+
+<span class="comment"># 3. 查看日志</span>
+<span class="comment"># Get-Content logs/jqquant.log -Tail 50</span></code>
+            </div>
+        </section>
+
+        <section id="astro" class="section">
+            <h2>🌟 Astro集成方案</h2>
+
+            <h3>为什么选择Astro？</h3>
+            <ul>
+                <li>✅ 现代化的Web框架，性能优异</li>
+                <li>✅ 支持多种前端框架（React, Vue, Svelte等）</li>
+                <li>✅ 优秀的SEO支持</li>
+                <li>✅ 适合构建数据可视化仪表板</li>
+                <li>✅ 可以集成Plotly、ECharts等图表库</li>
+            </ul>
+
+            <h3>架构规划</h3>
+            <div class="code-block">
+<code>JQQuant/
+├── core/              # Python回测引擎
+├── jqdata/           # 聚宽API
+├── strategies/       # 策略
+├── results/          # 回测结果（JSON）
+├── web/              # Astro Web应用
+│   ├── src/
+│   │   ├── pages/    # 页面路由
+│   │   │   ├── index.astro      # 首页
+│   │   │   ├── backtest.astro   # 回测页面
+│   │   │   ├── results/         # 结果展示
+│   │   │   └── strategies/      # 策略管理
+│   │   ├── components/          # 组件
+│   │   │   ├── Chart.astro      # 图表组件
+│   │   │   ├── Metrics.astro   # 指标展示
+│   │   │   └── StrategyList.astro
+│   │   ├── layouts/              # 布局
+│   │   └── api/                  # API路由
+│   │       └── results.json.ts  # 读取回测结果
+│   ├── public/       # 静态资源
+│   └── package.json
+└── docs/             # 文档（本教程）</code>
+            </div>
+
+            <h3>实施步骤</h3>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>初始化Astro项目</strong>
+                <div class="code-block">
+<code><span class="comment"># 在项目根目录创建web目录</span>
+<span class="command">cd web</span>
+<span class="command">npm create astro@latest .</span>
+<span class="command">npm install @astro/react plotly.js react-plotly.js</span></code>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>创建API端点读取回测结果</strong>
+                <p>文件：<code>web/src/pages/api/results.json.ts</code></p>
+                <div class="code-block">
+<code><span class="keyword">import</span> type { APIRoute } <span class="keyword">from</span> <span class="string">'astro'</span>;
+<span class="keyword">import</span> { readFileSync } <span class="keyword">from</span> <span class="string">'fs'</span>;
+<span class="keyword">import</span> { join } <span class="keyword">from</span> <span class="string">'path'</span>;
+
+<span class="keyword">export const</span> GET: APIRoute = <span class="keyword">async</span> ({ params }) => {
+  <span class="keyword">const</span> resultsPath = join(process.cwd(), <span class="string">'..'</span>, <span class="string">'results'</span>);
+  <span class="comment">// 读取最新的回测结果</span>
+  <span class="keyword">const</span> results = <span class="function">JSON.parse</span>(
+    <span class="function">readFileSync</span>(resultsPath, <span class="string">'utf-8'</span>)
+  );
+  <span class="keyword">return new</span> <span class="function">Response</span>(<span class="function">JSON.stringify</span>(results), {
+    headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> }
+  });
+};</code>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>创建图表组件</strong>
+                <p>文件：<code>web/src/components/BacktestChart.tsx</code></p>
+                <div class="code-block">
+<code><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">import</span> Plot <span class="keyword">from</span> <span class="string">'react-plotly.js'</span>;
+
+<span class="keyword">export default function</span> <span class="function">BacktestChart</span>({ data }) {
+  <span class="keyword">return</span> (
+    &lt;Plot
+      data={[{
+        x: data.dates,
+        y: data.total_value,
+        type: <span class="string">'scatter'</span>,
+        mode: <span class="string">'lines'</span>,
+        name: <span class="string">'总资产'</span>
+      }]}
+      layout={{
+        title: <span class="string">'回测资产曲线'</span>,
+        xaxis: { title: <span class="string">'日期'</span> },
+        yaxis: { title: <span class="string">'资产价值 (元)'</span> }
+      }}
+    /&gt;
+  );
+}</code>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>创建结果展示页面</strong>
+                <p>文件：<code>web/src/pages/results/[id].astro</code></p>
+                <div class="code-block">
+<code>---
+<span class="keyword">import</span> Layout <span class="keyword">from</span> <span class="string">'../../layouts/Layout.astro'</span>;
+<span class="keyword">import</span> BacktestChart <span class="keyword">from</span> <span class="string">'../../components/BacktestChart'</span>;
+
+<span class="keyword">const</span> { id } = Astro.params;
+<span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="function">`/api/results/${id}.json`</span>);
+<span class="keyword">const</span> results = <span class="keyword">await</span> response.<span class="function">json</span>();
+---
+&lt;Layout title=<span class="string">"回测结果"</span>&gt;
+  &lt;h1&gt;回测结果: {results.strategy}&lt;/h1&gt;
+  &lt;div class=<span class="string">"metrics"</span>&gt;
+    &lt;div&gt;总收益: {results.metrics.total_return * 100}%&lt;/div&gt;
+    &lt;div&gt;年化收益: {results.metrics.annual_return * 100}%&lt;/div&gt;
+    &lt;div&gt;夏普比率: {results.metrics.sharpe_ratio}&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;BacktestChart client:load data={results.portfolio_history} /&gt;
+&lt;/Layout&gt;</code>
+                </div>
+            </div>
+
+            <h3>功能规划</h3>
+            <ul>
+                <li>📊 <strong>回测结果可视化</strong> - 资产曲线、收益率曲线、回撤分析</li>
+                <li>📈 <strong>策略对比</strong> - 多个策略的性能对比</li>
+                <li>🔍 <strong>参数优化</strong> - 可视化参数优化结果</li>
+                <li>📋 <strong>策略管理</strong> - 策略列表、编辑、运行</li>
+                <li>📊 <strong>实时监控</strong> - 实盘交易监控（未来）</li>
+            </ul>
+
+            <div class="info">
+                <strong>💡 提示：</strong> Astro集成是可选的高级功能。基础的回测功能已经可以使用matplotlib进行可视化。
+            </div>
+        </section>
+
+        <footer>
+            <p>JQQuant - 基于聚宽API的量化交易平台</p>
+            <p>文档版本: 1.0 | 最后更新: 2024</p>
+        </footer>
+    </div>
+
+    <script>
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 代码高亮（简单版本）
+        document.querySelectorAll('.code-block').forEach(block => {
+            const code = block.textContent;
+            // 这里可以集成代码高亮库如Prism.js或highlight.js
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,53 @@
+{
+  "high_growth_stocks": [
+    "000001.XSHE",
+    "000002.XSHE",
+    "000858.XSHE",
+    "000876.XSHE",
+    "002142.XSHE",
+    "002230.XSHE",
+    "002304.XSHE",
+    "002415.XSHE",
+    "002594.XSHE",
+    "300015.XSHE",
+    "300059.XSHE",
+    "300750.XSHE",
+    "600000.XSHG",
+    "600036.XSHG",
+    "600519.XSHG",
+    "600887.XSHG",
+    "600893.XSHG",
+    "600900.XSHG",
+    "601318.XSHG",
+    "601398.XSHG",
+    "601601.XSHG",
+    "601688.XSHG",
+    "601766.XSHG",
+    "601818.XSHG",
+    "601857.XSHG",
+    "601888.XSHG",
+    "601939.XSHG",
+    "601988.XSHG",
+    "601998.XSHG"
+  ],
+  "description": "高增长股票池，包含A股市场的主要成长股和蓝筹股（已去重）",
+  "filters": {
+    "min_market_cap": 5000000000,
+    "min_turnover": 50000000,
+    "exclude_st": true,
+    "min_listing_days": 365,
+    "max_pe": 50,
+    "min_roe": 0.10
+  },
+  "industry_rotation": {
+    "bull_market": ["科技", "消费", "医药", "新能源"],
+    "bear_market": ["金融", "公用事业", "消费", "医药"],
+    "sideways": ["全行业"]
+  },
+  "dynamic_pool": {
+    "enabled": true,
+    "base_pool": "hs300",
+    "max_stocks": 50
+  }
+}
+
